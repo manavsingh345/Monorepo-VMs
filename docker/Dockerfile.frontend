@@ -1,0 +1,14 @@
+FROM oven/bun:1
+
+WORKDIR /usr/src/app
+
+ARG DATABASE_URL
+COPY . .
+
+RUN bun install
+RUN bun run generate:db
+RUN DATABASE_URL=${DATABASE_URL} bun run build
+
+EXPOSE 3000
+
+CMD ["bun","run","start:web"]
