@@ -1,10 +1,11 @@
 export const dynamic = "force-dynamic";
-export const revalidate = 0;
-
-import { prismaClient } from "@repo/db/client";
 
 export default async function Home() {
-  const users = await prismaClient.user.findMany();
+  const res = await fetch("http://localhost:3000/api/users", {
+    cache: "no-store",
+  });
+
+  const users = await res.json();
 
   return (
     <div>
