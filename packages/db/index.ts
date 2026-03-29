@@ -6,7 +6,10 @@ import { PrismaClient } from "./generated/prisma/client";
 
 const currentDir = dirname(fileURLToPath(import.meta.url));
 
-loadEnv({ path: resolve(currentDir, ".env") });
+/* FIX: only load .env locally */
+if (process.env.NODE_ENV !== "production") {
+  loadEnv({ path: resolve(currentDir, ".env") });
+}
 
 const connectionString = process.env.DATABASE_URL;
 
