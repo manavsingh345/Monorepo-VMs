@@ -6,17 +6,26 @@ import { PrismaClient } from "./generated/prisma/client";
 
 const currentDir = dirname(fileURLToPath(import.meta.url));
 
-/* FIX: only load .env locally */
 if (process.env.NODE_ENV !== "production") {
   loadEnv({ path: resolve(currentDir, ".env") });
 }
 
-const connectionString = process.env.DATABASE_URL;
+let prismaClient: PrismaClient;
 
-if (!connectionString) {
-  throw new Error("DATABASE_URL is not set");
+export function getPrismaClient() {
+  if (!prismaClient) {
+    const connectionString = process.env.DATABASE_URL;
+
+    if (!connectionString) {
+      console.warn("DATABASE_URL not available during build");
+      return null as any;
+    }
+
+    const adapter = new PrismaPg({ connectionString });
+    prismaClient = new PrismaClient({ adapter });
+  }
+
+  return prismaClient;
 }
 
-const adapter = new PrismaPg({ connectionString });
-
-export const prismaClient = new PrismaClient({ adapter });
+export { prismaClient };
